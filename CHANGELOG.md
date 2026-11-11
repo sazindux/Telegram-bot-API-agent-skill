@@ -4,6 +4,12 @@ All notable changes to the `telegram-api-skill` repository are documented in thi
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this skill tracks the official [Telegram Bot API Changelog](https://core.telegram.org/bots/api-changelog) and [MTProto Layer Changelog](https://core.telegram.org/api/layers).
 
+## [1.1.0] - 2026-11-11
+
+### Added
+- **Single-file edition (`SKILL-single-file.md`):** the complete skill — all 17 reference parts, the full 186-method / 402-type catalogs, all five helper-script sources, and all runnable examples — consolidated into one drop-in document for any AI agent, with a Source File ↔ Location Map, Table of Contents, and agent-facing usage instructions in the header.
+- **README:** "Single-File Edition" section documenting when/how to use the single file and context-window guidance.
+
 ## [1.0.0] - 2026-11-11
 
 ### Added

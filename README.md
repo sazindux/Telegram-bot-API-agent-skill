@@ -25,6 +25,7 @@ A complete, primary-source-verified **AI Agent Skill** for the **Telegram Bot AP
 ```text
 telegram-api-skill/
 ├── SKILL.md                        # Agent skill frontmatter + progressive-disclosure router (<500 lines)
+├── SKILL-single-file.md            # Complete single-file edition — entire skill inlined (drop into any AI chat, ~100k tokens)
 ├── README.md                       # Human overview, installation, usage, and contribution guide
 ├── LICENSE                         # MIT License
 ├── CHANGELOG.md                    # Skill release history
@@ -98,6 +99,32 @@ python3 scripts/dialog_id_converter.py -2500000000000
 # 5. Run the 100% Bot API 10.4 coverage audit
 python3 scripts/coverage_audit.py
 ```
+
+## Single-File Edition: [`SKILL-single-file.md`](./SKILL-single-file.md)
+
+The **entire skill** — every reference document, the full 186-method and 402-type catalogs, all five helper-script sources, and all runnable examples — is also available as **one self-contained file** (~395 KB, ≈100k tokens). Nothing was removed: it is the multi-file skill merged 1:1, with a **Source File ↔ Location Map**, a **Table of Contents**, and agent-facing usage instructions in the header.
+
+### When to Use It
+
+- **Drop into any AI agent chat:** Paste the whole file directly into a conversation (Claude, Gemini, GPT, Cursor, Windsurf — any agent with a large context window) or attach it as a project / system document. No repository, file tree, or `skills/` directory required.
+- **Install as an agent skill:** The file keeps the YAML `name` / `description` frontmatter, so skill platforms (Claude Code, OpenCode, etc.) auto-index it exactly like the multi-file version.
+- **Offline / single-artifact bundle:** Ship one file instead of the whole repository.
+
+### How to Use It
+
+1. Paste the entire file into the agent's context, or place it next to your prompt and tell the agent to read it.
+2. The agent reads the **"How to Use This Document"** header (6 numbered instructions, including the hard invariants), then jumps to the relevant **Part 1–17** or **Appendix A–G** via the Table of Contents for the task at hand.
+3. The five helper scripts are embedded with full source in **Appendix D** — in a chat-only setting the agent writes the file first (exact filenames given), then runs it.
+4. The three runnable example projects (Cloudflare Worker + grammY, aiogram v3, Telethon/Pyrogram) are in **Appendix E**, deployable as-is.
+
+### Context-Window Notes
+
+- ≈100k tokens — fits comfortably in 200k-context agents (Claude, Gemini); workable in 128k-context agents when the conversation stays focused.
+- For smaller-context agents, paste only the needed **Part** (each is self-contained) or use the multi-file version above.
+
+### Verification
+
+The single file was generated programmatically from this repository: every source file's content is asserted byte-present, and the 186/186 method and 402/402 type counts are re-verified inside the document itself. After updating the multi-file references, regenerate the single file from the updated sources.
 
 ## Contributing
 
