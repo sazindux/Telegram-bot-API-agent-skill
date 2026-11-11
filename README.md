@@ -25,6 +25,7 @@ A complete, primary-source-verified **AI Agent Skill** for the **Telegram Bot AP
 ```text
 telegram-api-skill/
 ├── SKILL.md                        # Agent skill frontmatter + progressive-disclosure router (<500 lines)
+├── SKILL-custom.md                 # Condensed zero-code edition — system custom skill for Gemini Chat / small budgets (~200 lines)
 ├── SKILL-single-file.md            # Complete single-file edition — entire skill inlined (drop into any AI chat, ~100k tokens)
 ├── README.md                       # Human overview, installation, usage, and contribution guide
 ├── LICENSE                         # MIT License
@@ -99,6 +100,31 @@ python3 scripts/dialog_id_converter.py -2500000000000
 # 5. Run the 100% Bot API 10.4 coverage audit
 python3 scripts/coverage_audit.py
 ```
+
+## Which Edition Should I Use?
+
+| | [`SKILL.md`](./SKILL.md) (multi-file router) | [`SKILL-custom.md`](./SKILL-custom.md) (condensed) | [`SKILL-single-file.md`](./SKILL-single-file.md) (full single file) |
+|---|---|---|---|
+| **Size** | ~95-line router + 16 reference files | **~200 lines, one file** | ~4,150 lines, one file (~100k tokens) |
+| **Executable code** | Scripts in `scripts/` | **None — 100% code-free** | Full script + example sources inlined (Appendices D–E) |
+| **Coverage** | 100% (progressive disclosure) | Quick rules, formulas, limits + complete 186-method / 402-type **name** catalogs | 100% of everything, byte-complete |
+| **Best for** | Claude Code / Cursor / OpenCode skills folders | **Gemini Chat Custom Skills**, platforms that reject scripts or enforce ≤ 500-line skill budgets | Dropping the whole skill into any large-context chat; offline / single-artifact bundle |
+
+## Condensed Edition: [`SKILL-custom.md`](./SKILL-custom.md)
+
+A lightweight **system custom skill** (~200 lines, **zero executable code**) built for skill engines that reject scripts (e.g. the Gemini Chat "Skill contains executable code or scripts" error) or cap skill size. It packs the essentials that must stay in context:
+
+- **Hard invariants** (UTF-16 entity math, `allowed_updates` rule, 10-second `pre_checkout_query`, `answerCallbackQuery`/`answerWidgetQuery`, 64-byte `callback_data`, 429/403 handling)
+- **Architecture decision matrix** (Hosted API vs Local Bot API Server vs Telegram Serverless vs MTProto vs TDLib)
+- **Rate & file limit tables** and webhook technical requirements (ports, TLS, secret-token header, subnets)
+- **Quick formulas:** MarkdownV2 context-aware escaping, Mini App `initData` HMAC-SHA256/Ed25519 verification, Login Widget secret, dialog-ID conversion incl. Monoforum range
+- **Widget, payments, and MTProto quick rules** + breaking changes (9.6 / 10.2 / 10.3 / 10.4)
+- **Complete name catalogs:** all 186 methods and all 402 types, grouped by category
+- **Top 12 production pitfalls** and a pointer table into the full editions
+
+Field-level parameter tables are deliberately delegated: the file tells the agent to open `SKILL-single-file.md` Part 4/5 (or `references/`) before writing anything beyond one-shot snippets.
+
+**How to install:** paste the file into Gemini Chat → Settings → Custom Skills (or Saved Info), or save it as `~/.claude/skills/telegram-api-skill-custom/SKILL.md`, or drop it in your project root as a system context document.
 
 ## Single-File Edition: [`SKILL-single-file.md`](./SKILL-single-file.md)
 

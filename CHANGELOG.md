@@ -4,6 +4,12 @@ All notable changes to the `telegram-api-skill` repository are documented in thi
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this skill tracks the official [Telegram Bot API Changelog](https://core.telegram.org/bots/api-changelog) and [MTProto Layer Changelog](https://core.telegram.org/api/layers).
 
+## [1.2.0] - 2026-11-11
+
+### Added
+- **Condensed edition (`SKILL-custom.md`):** ~200-line, 100% code-free system custom skill for platforms that reject executable code (e.g. Gemini Chat Custom Skills) or enforce small skill budgets. Contains hard invariants, the architecture decision matrix, rate/file limits, webhook requirements, MarkdownV2/initData/dialog-ID quick formulas, widget/payment/MTProto quick rules, breaking changes (9.6–10.4), the complete grouped 186-method and 402-type name catalogs (coverage-verified), and the top 12 production pitfalls.
+- **README:** "Which Edition Should I Use?" comparison table and "Condensed Edition" section with installation instructions.
+
 ## [1.1.0] - 2026-11-11
 
 ### Added
