@@ -1,0 +1,66 @@
+name: Integration Smoke Test (Live Bot API)
+
+# Agent recommendation #2: real integration smoke tests against the live
+# Telegram Bot API. This workflow is manual-only and needs two repository
+# secrets to run (Settings -> Secrets and variables -> Actions):
+#
+#   BOT_TOKEN     - a test bot token from @BotFather
+#   TEST_CHAT_ID  - a chat the bot can post in (your numeric user id works)
+#
+# Without those secrets the job intentionally fails fast and changes nothing.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-smoke:
+    runs-on: ubuntu-latest
+    env:
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+      TEST_CHAT_ID: ${{ secrets.TEST_CHAT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Guard - require BOT_TOKEN and TEST_CHAT_ID secrets
+        run: |
+          if [ -z "${BOT_TOKEN:-}" ] || [ -z "${TEST_CHAT_ID:-}" ]; then
+            echo "::notice::Set the BOT_TOKEN and TEST_CHAT_ID repository secrets to enable live smoke tests."
+            exit 1
+          fi
+
+      - name: Read-only calls (getMe, getWebhookInfo, getMyStarBalance)
+        run: |
+          set -euo pipefail
+          api() { curl -fsS "https://api.telegram.org/bot${BOT_TOKEN}/$1"; echo; }
+          api getMe
+          api getWebhookInfo
+          api getMyStarBalance
+
+      - name: MarkdownV2 sendMessage -> deleteMessage round-trip
+        run: |
+          set -euo pipefail
+          # Text is pre-escaped per references/formatting.md (no reserved chars).
+          RESP=$(curl -fsS -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TEST_CHAT_ID}" \
+            --data-urlencode "text=telegram-api-skill integration smoke test passed" \
+            --data-urlencode "parse_mode=MarkdownV2")
+          echo "$RESP"
+          MSG_ID=$(printf '%s' "$RESP" | python3 -c "import json,sys; print(json.load(sys.stdin)['result']['message_id'])")
+          curl -fsS -X POST "https://api.telegram.org/bot${BOT_TOKEN}/deleteMessage" \
+            --data-urlencode "chat_id=${TEST_CHAT_ID}" \
+            --data-urlencode "message_id=${MSG_ID}"
+          echo "Round-trip OK: message ${MSG_ID} sent and deleted."
+
+      - name: Helper-script self-tests (offline)
+        run: |
+          python3 scripts/escape_markdown_v2.py
+          python3 scripts/utf16_entity_offsets.py
+          python3 scripts/validate_initdata.py
+          python3 scripts/dialog_id_converter.py
+          python3 scripts/coverage_audit.py

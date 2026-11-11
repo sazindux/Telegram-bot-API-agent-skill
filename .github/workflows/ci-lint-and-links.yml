@@ -1,0 +1,22 @@
+name: Verify Skill Coverage, Scripts & Links
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run helper script self-tests & coverage audit
+        run: |
+          python3 scripts/escape_markdown_v2.py
+          python3 scripts/utf16_entity_offsets.py
+          python3 scripts/validate_initdata.py
+          python3 scripts/dialog_id_converter.py
+          python3 scripts/coverage_audit.py

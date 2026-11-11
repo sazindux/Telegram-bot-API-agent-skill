@@ -1,0 +1,45 @@
+name: Monitor Telegram Bot API & MTProto Changes
+
+# Daily change monitoring (agent recommendation #1):
+# opens a GitHub issue whenever Telegram releases a Bot API version newer than
+# 10.4 or an MTProto layer newer than 225, so the skill can be re-verified.
+
+on:
+  schedule:
+    - cron: "0 9 * * *" # Every day at 09:00 UTC
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  check-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check core.telegram.org for Bot API > 10.4 and MTProto Layer > 225
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -uo pipefail
+
+          API_LATEST=$(curl -sfL https://core.telegram.org/bots/api-changelog | grep -oE 'Bot API [0-9]+\.[0-9]+' | head -n 1 || true)
+          echo "Detected latest changelog entry: ${API_LATEST:-<unreachable>}"
+
+          if [ -n "$API_LATEST" ] && [ "$API_LATEST" != "Bot API 10.4" ]; then
+            gh issue create \
+              --title "New Telegram $API_LATEST released — update telegram-api-skill" \
+              --body "Official changelog https://core.telegram.org/bots/api-changelog now reports **$API_LATEST** (skill currently verified against **Bot API 10.4**). Re-run the research phases and update \`references/\`." \
+              --label "documentation" || true
+          fi
+
+          LAYER_LATEST=$(curl -sfL https://core.telegram.org/api/layers | grep -oE 'Layer [0-9]+' | head -n 1 || true)
+          echo "Detected latest MTProto layer: ${LAYER_LATEST:-<unreachable>}"
+
+          if [ -n "$LAYER_LATEST" ] && [ "$LAYER_LATEST" != "Layer 225" ]; then
+            gh issue create \
+              --title "New Telegram $LAYER_LATEST released — update telegram-api-skill MTProto references" \
+              --body "Official layer list https://core.telegram.org/api/layers now reports **$LAYER_LATEST** (skill currently verified against **Layer 225**). Update \`references/mtproto/\` and the TL schema notes." \
+              --label "documentation" || true
+          fi
